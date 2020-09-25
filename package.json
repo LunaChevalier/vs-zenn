@@ -10,7 +10,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vs-zenn.helloWorld"
+		"onCommand:vs-zenn.helloWorld",
+		"onView:vs-zenn-article"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

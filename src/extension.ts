@@ -2,6 +2,10 @@ import * as vscode from 'vscode';
 import { ItemProvider } from './items';
 
 export function activate(context: vscode.ExtensionContext) {
+	if (!(vscode.workspace.workspaceFolders)) {
+		vscode.window.showInformationMessage;("Don't exist workspace")
+		return;
+	}
 	vscode.window.showInformationMessage(vscode.workspace.workspaceFolders[0].uri.fsPath)
 	const itemProvider = new ItemProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
 	vscode.window.registerTreeDataProvider('vs-zenn-article', itemProvider);
