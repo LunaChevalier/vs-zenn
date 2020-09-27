@@ -20,9 +20,14 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
     let items = [new Item("labels")];
     if (this.pathExists(articlesPath)) {
       return fs.readdirSync(articlesPath, "utf-8").map((file) => {
-        const data = fs.readFileSync(path.join(articlesPath, file), "utf-8");
+        const filePath = path.join(articlesPath, file);
+        const data = fs.readFileSync(filePath, "utf-8");
         this.getHeader(data);
-        return new Item(this.getHeader(data));
+        return new Item(this.getHeader(data), filePath, {
+          command: 'vs-zenn.openFile',
+          title: '',
+          arguments: [filePath]
+        });
       });
     }
 
@@ -64,7 +69,9 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
 
 export class Item extends vscode.TreeItem {
   constructor(
-    public readonly label: string
+    public readonly label: string,
+    public readonly filePath?: string,
+    public readonly command?: vscode.Command
   ) {
     super(label);
   }
