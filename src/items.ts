@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 
 export class ItemProvider implements vscode.TreeDataProvider<Item> {
   onDidChangeTreeData?: vscode.Event<void | Item | null | undefined> | undefined;
@@ -27,20 +26,19 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
       });
     }
 
-    vscode.window.showInformationMessage(items.join(","));
     return items;
   }
 
   private pathExists(p: string): boolean {
-		try {
-			fs.accessSync(p);
-		} catch (err) {
-			return false;
-		}
+    try {
+      fs.accessSync(p);
+    } catch (err) {
+      return false;
+    }
 
-		return true;
+    return true;
   }
-  
+
   private getHeader(text: string): string {
     const newLineHex = /\r\n|\n/;
     const separate = "---";
@@ -48,10 +46,19 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
     const endIndex = text.split(newLineHex).indexOf(separate, startIndex);
     const headers = text.split(newLineHex).slice(startIndex, endIndex);
 
-    const label =
-      headers.find((header) => /^title:/.test(header)) ||
-      "タイトルなし";
-    return label.replace(/^title: /, "").replace(/"/g, "");
+    const title = this.getTitle(headers);
+    const emoji = this.getEmoji(headers);
+    return `${emoji}${title}`;
+  }
+
+  private getTitle(headers: string[]) {
+    const title = headers.find((header) => /^title:/.test(header)) || "non title";
+    return title.replace(/^title: /, "").replace(/^"/, "").replace(/"$/, "");
+  }
+
+  private getEmoji(headers: string[]) {
+    const emoji = headers.find((header) => /^emoji:/.test(header)) || "🈳";
+    return emoji.replace(/^emoji: /, "").replace(/^"/, "").replace(/"$/, "");
   }
 }
 
@@ -59,7 +66,7 @@ export class Item extends vscode.TreeItem {
   constructor(
     public readonly label: string
   ) {
-    super("labelabel");
+    super(label);
   }
 }
 
