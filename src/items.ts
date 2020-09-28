@@ -3,9 +3,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class ItemProvider implements vscode.TreeDataProvider<Item> {
-  onDidChangeTreeData?: vscode.Event<void | Item | null | undefined> | undefined;
+  private _onDidChangeTreeData: vscode.EventEmitter<Item | undefined> = new vscode.EventEmitter<Item | undefined>();
+  readonly onDidChangeTreeData?: vscode.Event<Item | undefined> = this._onDidChangeTreeData.event;
 
   constructor(private workspaceRoot: string) {
+  }
+
+  refresh(): void {
+    this._onDidChangeTreeData.fire(undefined);
   }
 
   getTreeItem(element: Item): vscode.TreeItem | Thenable<vscode.TreeItem> {

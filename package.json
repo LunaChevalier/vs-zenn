@@ -19,6 +19,14 @@
 			{
 				"command": "vs-zenn.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "vs-zenn.refresh",
+				"title": "Refresh",
+				"icon": {
+					"dark": "images/refresh.svg",
+					"light": "images/refresh.svg"
+				}
 			}
 		],
 		"viewsContainers": {
@@ -39,6 +47,15 @@
 				{
 					"id": "vs-zenn-book",
 					"name": "book"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "vs-zenn.refresh",
+					"when": "view == vs-zenn-article",
+					"group": "navigation"
 				}
 			]
 		}

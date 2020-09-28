@@ -16,6 +16,11 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from vs-zenn!');
 	}));
 	vscode.commands.registerCommand('vs-zenn.openFile', filePath => file.tryOpenFile(filePath));
+	vscode.commands.registerCommand('vs-zenn.refresh', () => {
+		itemProvider.refresh();
+	});
+
+	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => {itemProvider.refresh();}));
 }
 
 export function deactivate() {}
