@@ -2,7 +2,7 @@
 	"name": "vs-zenn",
 	"displayName": "vs-zenn",
 	"description": "",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.46.0"
 	},
