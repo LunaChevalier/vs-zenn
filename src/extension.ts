@@ -5,7 +5,7 @@ import * as cp from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
 	if (!(vscode.workspace.workspaceFolders)) {
-		vscode.window.showInformationMessage;("Don't exist workspace");
+		vscode.window.showInformationMessage("Don't exist workspace");
 		return;
 	}
 
@@ -17,8 +17,13 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from vs-zenn!');
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
+		if (!vscode.workspace.workspaceFolders) {
+			vscode.window.showInformationMessage("Don't exist workspace");
+			return;
+		}
 		const config = vscode.workspace.getConfiguration("vs-zenn");
 		const usingCommand = config.usingCommand;
+
 		cp.execSync(`cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} & ${usingCommand} zenn new:article`);
 		itemProvider.refresh();
 	}));
