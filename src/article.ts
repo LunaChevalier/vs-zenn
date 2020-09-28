@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as util from './util';
 
-export class ItemProvider implements vscode.TreeDataProvider<Item> {
-  private _onDidChangeTreeData: vscode.EventEmitter<Item | undefined> = new vscode.EventEmitter<Item | undefined>();
-  readonly onDidChangeTreeData?: vscode.Event<Item | undefined> = this._onDidChangeTreeData.event;
+export class ArticleProvider implements vscode.TreeDataProvider<Article> {
+  private _onDidChangeTreeData: vscode.EventEmitter<Article | undefined> = new vscode.EventEmitter<Article | undefined>();
+  readonly onDidChangeTreeData?: vscode.Event<Article | undefined> = this._onDidChangeTreeData.event;
 
   constructor(private workspaceRoot: string) {
   }
@@ -13,22 +14,22 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
     this._onDidChangeTreeData.fire(undefined);
   }
 
-  getTreeItem(element: Item): vscode.TreeItem | Thenable<vscode.TreeItem> {
+  getTreeItem(element: Article): vscode.TreeItem | Thenable<vscode.TreeItem> {
     return element;
   }
 
-  getChildren(element?: Item): vscode.ProviderResult<Item[]> {
+  getChildren(element?: Article): vscode.ProviderResult<Article[]> {
     return Promise.resolve(this.getArticles(path.join(this.workspaceRoot, 'articles')));
   }
 
-  private getArticles(articlesPath: string): Item[] {
-    let items = [new Item("labels")];
+  private getArticles(articlesPath: string): Article[] {
+    let items = [new Article("labels")];
     if (this.pathExists(articlesPath)) {
       return fs.readdirSync(articlesPath, "utf-8").map((file) => {
         const filePath = path.join(articlesPath, file);
         const data = fs.readFileSync(filePath, "utf-8");
         this.getHeader(data);
-        return new Item(this.getHeader(data), filePath, {
+        return new Article(this.getHeader(data), filePath, {
           command: 'vs-zenn.openFile',
           title: '',
           arguments: [filePath]
@@ -56,33 +57,18 @@ export class ItemProvider implements vscode.TreeDataProvider<Item> {
     const endIndex = text.split(newLineHex).indexOf(separate, startIndex);
     const headers = text.split(newLineHex).slice(startIndex, endIndex);
 
-    const title = this.getTitle(headers);
-    const emoji = this.getEmoji(headers);
+    const title = util.getTitle(headers);
+    const emoji = util.getEmoji(headers);
     return `${emoji}${title}`;
-  }
-
-  private getTitle(headers: string[]) {
-    const title = headers.find((header) => /^title:/.test(header)) || "non title";
-    return title.replace(/^title: /, "").replace(/^"/, "").replace(/"$/, "");
-  }
-
-  private getEmoji(headers: string[]) {
-    const emoji = headers.find((header) => /^emoji:/.test(header)) || "🈳";
-    return emoji.replace(/^emoji: /, "").replace(/^"/, "").replace(/"$/, "");
   }
 }
 
-export class Item extends vscode.TreeItem {
+export class Article extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly filePath?: string,
     public readonly command?: vscode.Command
   ) {
     super(label);
-  }
-}
-
-export class Article {
-  constructor(public readonly title: string) {
   }
 }

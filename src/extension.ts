@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { ItemProvider } from './items';
+import { ArticleProvider } from './article';
+import { BookProvider } from './book';
 import * as file from './file';
 import * as cp from 'child_process';
 
@@ -9,8 +10,11 @@ export function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 
-	const itemProvider = new ItemProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
-	vscode.window.registerTreeDataProvider('vs-zenn-article', itemProvider);
+	const articleProvider = new ArticleProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
+	vscode.window.registerTreeDataProvider('vs-zenn-article', articleProvider);
+
+	const bookProvider = new BookProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
+	vscode.window.registerTreeDataProvider('vs-zenn-book', bookProvider);
 
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
 		if (!vscode.workspace.workspaceFolders) {
@@ -21,14 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
 		const usingCommand = config.usingCommand;
 
 		cp.execSync(`cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} & ${usingCommand} zenn new:article`);
-		itemProvider.refresh();
+		articleProvider.refresh();
 	}));
 	vscode.commands.registerCommand('vs-zenn.openFile', filePath => file.tryOpenFile(filePath));
 	vscode.commands.registerCommand('vs-zenn.refresh', () => {
-		itemProvider.refresh();
+		articleProvider.refresh();
 	});
 
-	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => {itemProvider.refresh();}));
+	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => {articleProvider.refresh();}));
 }
 
 export function deactivate() {}
