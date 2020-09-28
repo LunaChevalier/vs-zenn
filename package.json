@@ -11,6 +11,7 @@
 	],
 	"activationEvents": [
 		"onCommand:vs-zenn.helloWorld",
+		"onCommand:vs-zenn.new.article",
 		"onView:vs-zenn-article"
 	],
 	"main": "./out/extension.js",
@@ -27,6 +28,10 @@
 					"dark": "images/refresh.svg",
 					"light": "images/refresh.svg"
 				}
+			},
+			{
+				"command": "vs-zenn.new.article",
+				"title": "zenn new article"
 			}
 		],
 		"viewsContainers": {
@@ -58,6 +63,20 @@
 					"group": "navigation"
 				}
 			]
+		},
+		"configuration": {
+			"title": "vs-zenn",
+			"properties": {
+				"vs-zenn.usingCommand": {
+					"type": "string",
+					"default": "npx",
+					"enum": ["npx", "yarn"],
+					"enumDescriptions": [
+						"use `npx` when executing the zenn-cli commands",
+						"use `yarn` when executing the zenn-cli commands"
+					]
+				}
+			}
 		}
 	},
 	"scripts": {
