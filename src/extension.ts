@@ -12,10 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const itemProvider = new ItemProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
 	vscode.window.registerTreeDataProvider('vs-zenn-article', itemProvider);
 
-
-	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from vs-zenn!');
-	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
 		if (!vscode.workspace.workspaceFolders) {
 			vscode.window.showInformationMessage("Don't exist workspace");

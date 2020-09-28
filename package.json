@@ -11,17 +11,12 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:vs-zenn.helloWorld",
 		"onCommand:vs-zenn.new.article",
 		"onView:vs-zenn-article"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "vs-zenn.helloWorld",
-				"title": "Hello World"
-			},
 			{
 				"command": "vs-zenn.refresh",
 				"title": "Refresh",
