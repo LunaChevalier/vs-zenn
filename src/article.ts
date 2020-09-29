@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from './util';
+import * as yaml from 'js-yaml';
 
 export class ArticleProvider implements vscode.TreeDataProvider<Article> {
   private _onDidChangeTreeData: vscode.EventEmitter<Article | undefined> = new vscode.EventEmitter<Article | undefined>();
@@ -28,11 +29,11 @@ export class ArticleProvider implements vscode.TreeDataProvider<Article> {
       return fs.readdirSync(articlesPath, "utf-8").map((file) => {
         const filePath = path.join(articlesPath, file);
         const data = fs.readFileSync(filePath, "utf-8");
-        this.getHeader(data);
-        return new Article(this.getHeader(data), filePath, {
-          command: 'vs-zenn.openFile',
-          title: '',
-          arguments: [filePath]
+        const header = yaml.safeLoad(util.getHeader(data));
+        return new Article(`${header?.emoji}${header?.title}`, filePath, {
+          command: "vs-zenn.openFile",
+          title: "",
+          arguments: [filePath],
         });
       });
     }
@@ -48,18 +49,6 @@ export class ArticleProvider implements vscode.TreeDataProvider<Article> {
     }
 
     return true;
-  }
-
-  private getHeader(text: string): string {
-    const newLineHex = /\r\n|\n/;
-    const separate = "---";
-    const startIndex = text.split(newLineHex).indexOf(separate) + 1;
-    const endIndex = text.split(newLineHex).indexOf(separate, startIndex);
-    const headers = text.split(newLineHex).slice(startIndex, endIndex);
-
-    const title = util.getTitle(headers);
-    const emoji = util.getEmoji(headers);
-    return `${emoji}${title}`;
   }
 }
 

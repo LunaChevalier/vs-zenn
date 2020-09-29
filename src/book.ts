@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from './util';
-import * as yaml from 'js-yaml';
+import * as yaml from 'js-yaml'
 
 export class BookProvider implements vscode.TreeDataProvider<Book> {
   private _onDidChangeTreeData: vscode.EventEmitter<Book | undefined> = new vscode.EventEmitter<Book | undefined>();
@@ -20,29 +20,44 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
   }
 
   getChildren(element?: Book): vscode.ProviderResult<Book[]> {
-    return Promise.resolve(this.getBooks(path.join(this.workspaceRoot, 'books')));
+    console.log(`element:${JSON.stringify(element)}`);
+    if (element) {
+      return Promise.resolve(this.getBooks(element.filePath));
+    } else {
+      return Promise.resolve(this.getBooks(path.join(this.workspaceRoot, "books")));
+    }
   }
 
   private getBooks(booksPath: string): Book[] {
-    let items = [new Book("labels")];
+    let items: Array<Book> = [];
     if (this.pathExists(booksPath)) {
-      fs.readdirSync(booksPath, "utf-8").forEach(dir => {
-        console.log(`dir:${dir}`);
-        const bookPath = path.join(booksPath, dir);
-        const toItems = fs.readdirSync(bookPath, 'utf-8').map(fileName => {
-          const filePath = path.join(bookPath, fileName);
-          if (/.*md/.test(filePath)) {
-            return new Book("article 1", filePath, vscode.TreeItemCollapsibleState.None, {
-              command: 'vs-zenn.openFile',
-              title: '',
-              arguments: [filePath]
-            });
-          } else {
-            const bookData = fs.readFileSync(filePath);
-            return new Book(yaml.safeLoad(bookData).title, "", vscode.TreeItemCollapsibleState.Collapsed);
-          }
+      if (/.*books$/.test(booksPath)) {
+        items = fs.readdirSync(booksPath, "utf-8").map((fileName) => {
+          const filePath = path.join(booksPath, fileName, "config.yaml");
+          const bookData = fs.readFileSync(filePath).toString();
+          return new Book(
+            `📖${yaml.safeLoad(bookData)?.title}`,
+            path.join(booksPath, fileName),
+            vscode.TreeItemCollapsibleState.Collapsed
+          );
         });
-      });
+      } else {
+        items = fs.readdirSync(booksPath, "utf-8").map((fileName) => {
+          const filePath = path.join(booksPath, fileName);
+          const articleData = fs.readFileSync(filePath).toString();
+          const header = yaml.safeLoad(util.getHeader(articleData));
+          return new Book(
+            `${/.*\.md$/.test(filePath) ? "📝" + header?.title : "⚙設定" }`,
+            filePath,
+            vscode.TreeItemCollapsibleState.None,
+            {
+              command: "vs-zenn.openFile",
+              title: "",
+              arguments: [filePath],
+            }
+          );
+        });
+      }
     }
 
     return items;
@@ -56,18 +71,6 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
     }
 
     return true;
-  }
-
-  private getHeader(text: string): string {
-    const newLineHex = /\r\n|\n/;
-    const separate = "---";
-    const startIndex = text.split(newLineHex).indexOf(separate) + 1;
-    const endIndex = text.split(newLineHex).indexOf(separate, startIndex);
-    const headers = text.split(newLineHex).slice(startIndex, endIndex);
-
-    const title = util.getTitle(headers);
-    const emoji = util.getEmoji(headers);
-    return `${emoji}${title}`;
   }
 }
 
