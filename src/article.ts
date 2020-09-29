@@ -29,7 +29,7 @@ export class ArticleProvider implements vscode.TreeDataProvider<Article> {
       return fs.readdirSync(articlesPath, "utf-8").map((file) => {
         const filePath = path.join(articlesPath, file);
         const data = fs.readFileSync(filePath, "utf-8");
-        const header = yaml.safeLoad(util.getHeader(data));
+        const header = util.getHeader(data);
         return new Article(`${header?.emoji}${header?.title}`, filePath, {
           command: "vs-zenn.openFile",
           title: "",

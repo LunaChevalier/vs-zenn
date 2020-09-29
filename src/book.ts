@@ -21,7 +21,7 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
 
   getChildren(element?: Book): vscode.ProviderResult<Book[]> {
     console.log(`element:${JSON.stringify(element)}`);
-    if (element) {
+    if (element && element.filePath) {
       return Promise.resolve(this.getBooks(element.filePath));
     } else {
       return Promise.resolve(this.getBooks(path.join(this.workspaceRoot, "books")));
@@ -36,7 +36,7 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
           const filePath = path.join(booksPath, fileName, "config.yaml");
           const bookData = fs.readFileSync(filePath).toString();
           return new Book(
-            `📖${yaml.safeLoad(bookData)?.title}`,
+            `📖${util.getHeader(bookData)?.title}`,
             path.join(booksPath, fileName),
             vscode.TreeItemCollapsibleState.Collapsed
           );
@@ -45,7 +45,7 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
         items = fs.readdirSync(booksPath, "utf-8").map((fileName) => {
           const filePath = path.join(booksPath, fileName);
           const articleData = fs.readFileSync(filePath).toString();
-          const header = yaml.safeLoad(util.getHeader(articleData));
+          const header = util.getHeader(articleData);
           return new Book(
             `${/.*\.md$/.test(filePath) ? "📝" + header?.title : "⚙設定" }`,
             filePath,
