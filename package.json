@@ -27,7 +27,11 @@
 			},
 			{
 				"command": "vs-zenn.new.article",
-				"title": "zenn new article"
+				"title": "vs-zenn: new article"
+			},
+			{
+				"command": "vs-zenn.new.book",
+				"title": "vs-zenn: new book"
 			}
 		],
 		"viewsContainers": {
@@ -55,7 +59,7 @@
 			"view/title": [
 				{
 					"command": "vs-zenn.refresh",
-					"when": "view == vs-zenn-article",
+					"when": "view == vs-zenn-article || view == vs-zenn-book",
 					"group": "navigation"
 				}
 			]
