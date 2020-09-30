@@ -3,6 +3,7 @@
 	"displayName": "vs-zenn",
 	"description": "",
 	"version": "0.2.1",
+	"repository": "https://github.com/LunaChevalier/vs-zenn",
 	"publisher": "LunaChevalier",
 	"engines": {
 		"vscode": "^1.46.0"
