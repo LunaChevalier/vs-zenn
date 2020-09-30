@@ -18,22 +18,24 @@ export function activate(context: vscode.ExtensionContext) {
 	const bookProvider = new BookProvider(config.rootDir);
 	vscode.window.registerTreeDataProvider('vs-zenn-book', bookProvider);
 
-	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', async () => {
 		if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
+		const title = await vscode.window.showInputBox({ prompt: "input article title"});
 
-		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:article`);
+		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:article --title ${title}`);
 		articleProvider.refresh();
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', async () => {
 		if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
+		const title = await vscode.window.showInputBox({ prompt: "input article title"});
 
-		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:book`);
+		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:book --title ${title}`);
 		bookProvider.refresh();
 	}));
 
