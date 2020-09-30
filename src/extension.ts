@@ -23,9 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
-		const usingCommand = config.usingCommand;
 
-		cp.execSync(`cd ${config.rootDir} & ${usingCommand} zenn new:article`);
+		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:article`);
 		articleProvider.refresh();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', () => {
@@ -33,9 +32,8 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
-		const usingCommand = config.usingCommand;
 
-		cp.execSync(`cd ${config.rootDir} & ${usingCommand} zenn new:book`);
+		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:book`);
 		bookProvider.refresh();
 	}));
 
