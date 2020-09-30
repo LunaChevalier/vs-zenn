@@ -74,10 +74,14 @@
 						"npx",
 						"yarn"
 					],
-					"enumDescriptions": [
+					"markdownEnumDescriptions": [
 						"use `npx` when executing the zenn-cli commands",
 						"use `yarn` when executing the zenn-cli commands"
 					]
+				},
+				"vs-zenn.rootDir": {
+					"type": "string",
+					"markdownDescription": "Please input directory where `zenn-cli` is installed"
 				}
 			}
 		}

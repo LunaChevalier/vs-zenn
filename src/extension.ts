@@ -3,17 +3,19 @@ import { ArticleProvider } from './article';
 import { BookProvider } from './book';
 import * as file from './file';
 import * as cp from 'child_process';
+import * as util from "./util";
 
 export function activate(context: vscode.ExtensionContext) {
-	if (!(vscode.workspace.workspaceFolders)) {
-		vscode.window.showInformationMessage("Don't exist workspace");
-		return;
-	}
+	const config = vscode.workspace.getConfiguration("vs-zenn");
+	if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
+    vscode.window.showInformationMessage("Don't exist workspace");
+    return;
+  }
 
-	const articleProvider = new ArticleProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
+	const articleProvider = new ArticleProvider(config.rootDir);
 	vscode.window.registerTreeDataProvider('vs-zenn-article', articleProvider);
 
-	const bookProvider = new BookProvider(vscode.workspace.workspaceFolders[0].uri.fsPath);
+	const bookProvider = new BookProvider(config.rootDir);
 	vscode.window.registerTreeDataProvider('vs-zenn-book', bookProvider);
 
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
@@ -21,10 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
-		const config = vscode.workspace.getConfiguration("vs-zenn");
 		const usingCommand = config.usingCommand;
 
-		cp.execSync(`cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} & ${usingCommand} zenn new:article`);
+		cp.execSync(`cd ${config.rootDir} & ${usingCommand} zenn new:article`);
 		articleProvider.refresh();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', () => {
@@ -35,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const config = vscode.workspace.getConfiguration("vs-zenn");
 		const usingCommand = config.usingCommand;
 
-		cp.execSync(`cd ${vscode.workspace.workspaceFolders[0].uri.fsPath} & ${usingCommand} zenn new:book`);
+		cp.execSync(`cd ${config.rootDir} & ${usingCommand} zenn new:book`);
 		bookProvider.refresh();
 	}));
 

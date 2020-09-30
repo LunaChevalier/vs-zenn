@@ -20,7 +20,6 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
   }
 
   getChildren(element?: Book): vscode.ProviderResult<Book[]> {
-    console.log(`element:${JSON.stringify(element)}`);
     if (element && element.filePath) {
       return Promise.resolve(this.getBooks(element.filePath));
     } else {
@@ -30,7 +29,7 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
 
   private getBooks(booksPath: string): Book[] {
     let items: Array<Book> = [];
-    if (this.pathExists(booksPath)) {
+    if (util.isExistsPath(booksPath)) {
       if (/.*books$/.test(booksPath)) {
         items = fs.readdirSync(booksPath, "utf-8").map((fileName) => {
           const filePath = path.join(booksPath, fileName, "config.yaml");
@@ -61,16 +60,6 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
     }
 
     return items;
-  }
-
-  private pathExists(p: string): boolean {
-    try {
-      fs.accessSync(p);
-    } catch (err) {
-      return false;
-    }
-
-    return true;
   }
 }
 

@@ -25,7 +25,7 @@ export class ArticleProvider implements vscode.TreeDataProvider<Article> {
 
   private getArticles(articlesPath: string): Article[] {
     let items = [new Article("labels")];
-    if (this.pathExists(articlesPath)) {
+    if (util.isExistsPath(articlesPath)) {
       return fs.readdirSync(articlesPath, "utf-8").map((file) => {
         const filePath = path.join(articlesPath, file);
         const data = fs.readFileSync(filePath, "utf-8");
@@ -39,16 +39,6 @@ export class ArticleProvider implements vscode.TreeDataProvider<Article> {
     }
 
     return items;
-  }
-
-  private pathExists(p: string): boolean {
-    try {
-      fs.accessSync(p);
-    } catch (err) {
-      return false;
-    }
-
-    return true;
   }
 }
 
