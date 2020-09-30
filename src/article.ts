@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from './util';
-import * as yaml from 'js-yaml';
 
 export class ArticleProvider implements vscode.TreeDataProvider<Article> {
   private _onDidChangeTreeData: vscode.EventEmitter<Article | undefined> = new vscode.EventEmitter<Article | undefined>();
