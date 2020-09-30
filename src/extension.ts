@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider('vs-zenn-book', bookProvider);
 
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.article', () => {
-		if (!vscode.workspace.workspaceFolders) {
+		if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
@@ -29,11 +29,10 @@ export function activate(context: vscode.ExtensionContext) {
 		articleProvider.refresh();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', () => {
-		if (!vscode.workspace.workspaceFolders) {
+		if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
 			vscode.window.showInformationMessage("Don't exist workspace");
 			return;
 		}
-		const config = vscode.workspace.getConfiguration("vs-zenn");
 		const usingCommand = config.usingCommand;
 
 		cp.execSync(`cd ${config.rootDir} & ${usingCommand} zenn new:book`);
