@@ -26,7 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const title = await vscode.window.showInputBox({ prompt: "input article title"});
 		const type = await vscode.window.showQuickPick(["tech", "idea"], {canPickMany: false});
 
-		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:article --title ${title} --type ${type}`);
+		process.chdir(config.rootDir);
+		cp.execSync(`${config.usingCommand} zenn new:article --title ${title} --type ${type}`);
 		articleProvider.refresh();
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', async () => {
@@ -36,7 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const title = await vscode.window.showInputBox({ prompt: "input article title"});
 
-		cp.execSync(`cd ${config.rootDir} & ${config.usingCommand} zenn new:book --title ${title}`);
+		process.chdir(config.rootDir);
+		cp.execSync(`${config.usingCommand} zenn new:book --title ${title}`);
 		bookProvider.refresh();
 	}));
 
