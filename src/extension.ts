@@ -58,8 +58,9 @@ export function activate(context: vscode.ExtensionContext) {
         items.map((obj) => obj.title),
         {
           canPickMany: false,
+          placeHolder: "select title you want to add chapter",
         }
-			);
+      );
 			if (!type) {
 				return;
 			}
@@ -72,7 +73,8 @@ export function activate(context: vscode.ExtensionContext) {
 			const slug = items.filter((obj) => obj.title === type)[0].slug;
 			const chapters = Book.getChapters(slug);
 			const chapter = await vscode.window.showQuickPick(chapters, {
-        canPickMany: false,
+				canPickMany: false,
+				placeHolder: "input or select number you want to add chapter",
 			});
 
 			if (!chapter) {
