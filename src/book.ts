@@ -71,4 +71,40 @@ export class Book extends vscode.TreeItem {
   ) {
     super(label, collapsibleState || vscode.TreeItemCollapsibleState.None);
   }
+
+  static getTitles() {
+    const config = vscode.workspace.getConfiguration("vs-zenn");
+    const rootDirBook = path.join(config.rootDir, "books");
+    const items = fs.readdirSync(rootDirBook, "utf-8").map((dirName) => {
+      const filePath = path.join(rootDirBook, dirName, "config.yaml");
+      const articleData = fs.readFileSync(filePath).toString();
+      const header = util.getHeader(articleData);
+      return {
+        slug: dirName,
+        title: header.title
+      };
+    });
+    return items;
+  }
+
+  static getChapters(slug: string) {
+    const config = vscode.workspace.getConfiguration("vs-zenn");
+    const rootDirBook = path.join(config.rootDir, "books", slug);
+    const files = fs.readdirSync(rootDirBook, "utf-8");
+    return Array(files.length).fill(0).map((v,i)=>++i).map((i) => i.toString());
+  }
+
+  static addChapter(slug: string, chapter: number, title: string) {
+    const config = vscode.workspace.getConfiguration("vs-zenn");
+    const rootDirBook = path.join(config.rootDir, "books", slug);
+    const files = fs.readdirSync(rootDirBook, "utf-8");
+    for (let i = files.length; i > chapter; i--) {
+      const oldFileDir = path.join(rootDirBook, `${i - 1}.md`);
+      const newFileDir = path.join(rootDirBook, `${i}.md`);
+      fs.renameSync(oldFileDir, newFileDir);
+    }
+
+    const content = `---\ntitle: ${title}\n---\n`;
+    fs.writeFileSync(path.join(rootDirBook, `${chapter}.md`), content);
+  }
 }

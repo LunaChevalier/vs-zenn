@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ArticleProvider } from './article';
-import { BookProvider } from './book';
+import { Book, BookProvider } from './book';
 import * as file from './file';
 import * as cp from 'child_process';
 import * as util from "./util";
@@ -47,6 +47,42 @@ export function activate(context: vscode.ExtensionContext) {
 		articleProvider.refresh();
 		bookProvider.refresh();
 	});
+	context.subscriptions.push(vscode.commands.registerCommand("vs-zenn.add.chapter", async () => {
+      if (!config.rootDir || !util.isExistsPath(config.rootDir)) {
+        vscode.window.showInformationMessage("Don't exist workspace");
+        return;
+			}
+
+			const items = Book.getTitles();
+			const type = await vscode.window.showQuickPick(
+        items.map((obj) => obj.title),
+        {
+          canPickMany: false,
+        }
+			);
+			if (!type) {
+				return;
+			}
+			const newTitle = await vscode.window.showInputBox({
+        prompt: "input article title",
+			});
+			if (!newTitle){
+				return;
+			}
+			const slug = items.filter((obj) => obj.title === type)[0].slug;
+			const chapters = Book.getChapters(slug);
+			const chapter = await vscode.window.showQuickPick(chapters, {
+        canPickMany: false,
+			});
+
+			if (!chapter) {
+				return;
+			}
+			Book.addChapter(slug, parseInt(chapter), newTitle);
+			vscode.window.showInformationMessage("vs-zenn.add chapter books");
+			bookProvider.refresh();
+    })
+  );
 
 	context.subscriptions.push(vscode.workspace.onDidSaveTextDocument(() => {
 		vscode.commands.executeCommand("vs-zenn.refresh");

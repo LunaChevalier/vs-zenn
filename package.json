@@ -33,6 +33,10 @@
 			{
 				"command": "vs-zenn.new.book",
 				"title": "vs-zenn: new book"
+			},
+			{
+				"command": "vs-zenn.add.chapter",
+				"title": "vs-zenn: add chapter in books"
 			}
 		],
 		"viewsContainers": {
