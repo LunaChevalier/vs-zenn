@@ -71,16 +71,8 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
           if (!a.filePath || !b.filePath) {
             return -1;
           }
-          console.log(a.filePath.split('\\').slice(-1)[0]);
-          console.log(chapters.indexOf(a.filePath.split('\\').slice(-1)[0]));
-          console.log(chapters.indexOf(b.filePath.split('\\').slice(-1)[0]));
 
-          return chapters.indexOf(a.filePath.split('\\').slice(-1)[0]) - chapters.indexOf(b.filePath.split('\\').slice(-1)[0]);
-          // return uti1l.getHeader(bookConfig).chapters.indexOf(a.);
-          // fs.readdirSync(booksPath, "utf-8").forEach((fileName) => {
-          //   const filePath = path.join(booksPath, fileName);
-          //   console.log(filePath);
-          // });
+          return chapters.indexOf(a.filePath.split('\\').slice(-1)[0].split('.')[0]) - chapters.indexOf(b.filePath.split('\\').slice(-1)[0].split('.')[0]);
         });
       }
     }
