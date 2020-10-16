@@ -55,6 +55,33 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
             }
           );
         });
+        if (items.length === 0) {
+          vscode.window.showErrorMessage('failed get book items.');
+          return [];
+        }
+        const bookConfigPath = items.filter((item) => item.filePath?.includes("config.yaml"))[0].filePath;
+        if (!bookConfigPath) {
+          vscode.window.showErrorMessage("failed get book config.");
+          return [];
+        }
+        const bookConfig = fs.readFileSync(bookConfigPath).toString();
+        const chapters = util.getHeader(bookConfig).chapters;
+        console.log(chapters);
+        items = items.sort((a, b) => {
+          if (!a.filePath || !b.filePath) {
+            return -1;
+          }
+          console.log(a.filePath.split('\\').slice(-1)[0]);
+          console.log(chapters.indexOf(a.filePath.split('\\').slice(-1)[0]));
+          console.log(chapters.indexOf(b.filePath.split('\\').slice(-1)[0]));
+
+          return chapters.indexOf(a.filePath.split('\\').slice(-1)[0]) - chapters.indexOf(b.filePath.split('\\').slice(-1)[0]);
+          // return uti1l.getHeader(bookConfig).chapters.indexOf(a.);
+          // fs.readdirSync(booksPath, "utf-8").forEach((fileName) => {
+          //   const filePath = path.join(booksPath, fileName);
+          //   console.log(filePath);
+          // });
+        });
       }
     }
 
