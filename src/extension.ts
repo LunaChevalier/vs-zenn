@@ -65,13 +65,13 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       const newTitle = await vscode.window.showInputBox({
-        prompt: "input article title",
+        placeHolder: "input new article title",
       });
       if (!newTitle){
         return;
       }
-      const slug = items.filter((obj) => obj.title === type)[0].slug;
-      const chapters = Book.getChapters(slug);
+      const bookSlug = items.filter((obj) => obj.title === type)[0].slug;
+      const chapters = Book.getChapters(bookSlug);
       const chapter = await vscode.window.showQuickPick(chapters, {
         canPickMany: false,
         placeHolder: "input or select number you want to add chapter",
@@ -80,7 +80,14 @@ export function activate(context: vscode.ExtensionContext) {
       if (!chapter) {
         return;
       }
-      Book.addChapter(slug, parseInt(chapter), newTitle);
+
+      const newSlug = await vscode.window.showInputBox({
+        prompt: "input new chapter name",
+      });
+      if (!newSlug) {
+        return;
+      }
+      Book.addChapter(bookSlug, parseInt(chapter), newTitle, newSlug);
       vscode.window.showInformationMessage("vs-zenn.add chapter books");
       bookProvider.refresh();
     })

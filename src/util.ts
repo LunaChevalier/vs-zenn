@@ -18,3 +18,11 @@ export function isExistsPath(p: string): boolean {
 
   return true;
 }
+
+export function getBookConfig(path: string): Header {
+  return yaml.safeLoad(fs.readFileSync(path).toString()) as Header;
+}
+
+export function generateBookConfigFile(conf: Header) {
+  return yaml.dump(conf);
+}

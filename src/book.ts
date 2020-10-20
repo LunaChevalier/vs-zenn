@@ -66,7 +66,6 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
         }
         const bookConfig = fs.readFileSync(bookConfigPath).toString();
         const chapters = util.getHeader(bookConfig).chapters;
-        console.log(chapters);
         items = items.sort((a, b) => {
           if (!a.filePath || !b.filePath) {
             return -1;
@@ -113,17 +112,27 @@ export class Book extends vscode.TreeItem {
     return Array(files.length).fill(0).map((v,i)=>++i).map((i) => i.toString());
   }
 
-  static addChapter(slug: string, chapter: number, title: string) {
-    const config = vscode.workspace.getConfiguration("vs-zenn");
-    const rootDirBook = path.join(config.rootDir, "books", slug);
-    const files = fs.readdirSync(rootDirBook, "utf-8");
-    for (let i = files.length; i > chapter; i--) {
-      const oldFileDir = path.join(rootDirBook, `${i - 1}.md`);
-      const newFileDir = path.join(rootDirBook, `${i}.md`);
-      fs.renameSync(oldFileDir, newFileDir);
+  static addChapter(bookSlug: string, chapterIndex: number, title: string, chapter: string) {
+    if (!Book.validateChapter(chapter)) {
+      vscode.window.showErrorMessage(
+        `Error: Chapter name must be named with a-z, 1-9 or '-'.\n You inputted ${chapter}`
+      );
+      return;
     }
+    const config = vscode.workspace.getConfiguration("vs-zenn");
+    const rootDirBook = path.join(config.rootDir, "books", bookSlug);
+    const header = util.getBookConfig(path.join(rootDirBook, "config.yaml"));
+    header.chapters.splice(chapterIndex - 1, 0, chapter);
+    fs.writeFileSync(
+      path.join(rootDirBook, "config.yaml"),
+      util.generateBookConfigFile(header)
+    );
 
     const content = `---\ntitle: ${title}\n---\n`;
     fs.writeFileSync(path.join(rootDirBook, `${chapter}.md`), content);
+  }
+
+  private static validateChapter(chapter: string):boolean {
+    return /^[a-z0-9-]+$/.test(chapter);
   }
 }
