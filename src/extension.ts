@@ -4,6 +4,7 @@ import { Book, BookProvider } from './book';
 import * as file from './file';
 import * as cp from 'child_process';
 import * as util from "./util";
+import * as path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   const config = vscode.workspace.getConfiguration("vs-zenn");
@@ -28,6 +29,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     process.chdir(config.rootDir);
     cp.execSync(`${config.usingCommand} zenn new:article --title ${title} --type ${type}`);
+    const newFile = util.getFileNameLatest(path.join(config.rootDir, 'articles'));
+    file.tryOpenFile(path.join(config.rootDir, 'articles', newFile));
     articleProvider.refresh();
   }));
   context.subscriptions.push(vscode.commands.registerCommand('vs-zenn.new.book', async () => {

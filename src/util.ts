@@ -1,5 +1,6 @@
 import * as yaml from "js-yaml";
 import * as fs from 'fs';
+import * as path from 'path';
 
 export function getHeader(text: string): Header {
   const newLineHex = /\r\n|\n/;
@@ -19,10 +20,19 @@ export function isExistsPath(p: string): boolean {
   return true;
 }
 
-export function getBookConfig(path: string): Header {
-  return yaml.safeLoad(fs.readFileSync(path).toString()) as Header;
+export function getBookConfig(filepath: string): Header {
+  return yaml.safeLoad(fs.readFileSync(filepath).toString()) as Header;
 }
 
 export function generateBookConfigFile(conf: Header) {
   return yaml.dump(conf);
+}
+
+export function getFileNameLatest(filepath: string): string {
+  return fs.readdirSync(filepath).map(filename => {
+    return {
+      filename: filename,
+      mtime: fs.statSync(path.join(filepath, filename)).mtime.getTime(),
+    };
+  }).sort((a, b) => b.mtime - a.mtime)[0].filename;
 }
