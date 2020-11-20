@@ -40,21 +40,28 @@ export class BookProvider implements vscode.TreeDataProvider<Book> {
           );
         });
       } else {
-        items = fs.readdirSync(booksPath, "utf-8").map((fileName) => {
-          const filePath = path.join(booksPath, fileName);
-          const articleData = fs.readFileSync(filePath).toString();
-          const header = util.getHeader(articleData);
-          return new Book(
-            `${/.*\.md$/.test(filePath) ? "📝" + header?.title : "⚙設定" }`,
-            filePath,
-            vscode.TreeItemCollapsibleState.None,
-            {
-              command: "vs-zenn.openFile",
-              title: "",
-              arguments: [filePath],
-            }
-          );
-        });
+        items = fs
+          .readdirSync(booksPath, "utf-8")
+          .filter(
+            (name) =>
+              /.*\.md$/.test(name) ||
+              /.*\.yaml$/.test(name) ||
+              /.*\.yml$/.test(name)
+          ).map((fileName) => {
+            const filePath = path.join(booksPath, fileName);
+            const articleData = fs.readFileSync(filePath).toString();
+            const header = util.getHeader(articleData);
+            return new Book(
+              `${/.*\.md$/.test(filePath) ? "📝" + header?.title : "⚙設定"}`,
+              filePath,
+              vscode.TreeItemCollapsibleState.None,
+              {
+                command: "vs-zenn.openFile",
+                title: "",
+                arguments: [filePath],
+              }
+            );
+          });
         if (items.length === 0) {
           vscode.window.showErrorMessage('failed get book items.');
           return [];
