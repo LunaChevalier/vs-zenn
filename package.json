@@ -2,7 +2,7 @@
 	"name": "vs-zenn",
 	"displayName": "vs-zenn",
 	"description": "",
-	"version": "0.5.4",
+	"version": "0.5.5",
 	"repository": "https://github.com/LunaChevalier/vs-zenn",
 	"publisher": "LunaChevalier",
 	"engines": {
